@@ -1,0 +1,32 @@
+name: Publish website
+
+# Runs ONLY when started by hand (Actions → Publish website → Run workflow). Pushing never runs it.
+# Needs the secret FIREBASE_SERVICE_ACCOUNT (a Firebase service-account JSON key) and the project id in .firebaserc.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check version has a changelog entry
+        run: node scripts/check-version.cjs
+      - name: Build
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+      - name: Publish to Firebase Hosting
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          test -n "$SA" || { echo "::error::Secret FIREBASE_SERVICE_ACCOUNT is not set (see README)."; exit 1; }
+          printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
+          GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json" npx --yes firebase-tools@13.29.1 deploy --only hosting --non-interactive
+          rm -f "$RUNNER_TEMP/sa.json"

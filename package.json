@@ -1,0 +1,24 @@
+{
+  "name": "splitmitra-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "bump": "node scripts/bump-version.cjs",
+    "check:version": "node scripts/check-version.cjs"
+  },
+  "dependencies": {
+    "react": "19.1.4",
+    "react-dom": "19.1.4"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.4",
+    "@types/react-dom": "^19.1.4",
+    "@vitejs/plugin-react": "4.3.4",
+    "typescript": "^5.3.3",
+    "vite": "5.4.11"
+  }
+}
